@@ -59,7 +59,8 @@ const LayoutBase = props => {
     <PostHero {...props} />
   ) : router.route === '/' &&
     siteConfig('HEXO_HOME_BANNER_ENABLE', null, CONFIG) ? (
-    <Hero {...props} />
+    // <Hero {...props} />
+    null
   ) : null
 
   const drawerRight = useRef(null)
