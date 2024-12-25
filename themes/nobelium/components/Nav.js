@@ -11,6 +11,7 @@ import { MenuItemDrop } from './MenuItemDrop'
 import RandomPostButton from './RandomPostButton'
 import SearchButton from './SearchButton'
 import { SvgIcon } from './SvgIcon'
+
 /**
  * 顶部导航
  */
@@ -24,12 +25,16 @@ const Nav = props => {
 
   const navRef = useRef(null)
   const sentinalRef = useRef([])
-  const handler = ([entry]) => {
+  const [isFullNow, setIsFullNow] = useState(false)
+
+  const handler = ([entry], isFullNow) => {
     if (navRef && navRef.current && autoCollapseNavBar) {
       if (!entry?.isIntersecting) {
         navRef.current?.classList.add('sticky-nav-full')
+        setIsFullNow(true) // Update state
       } else {
         navRef.current?.classList.remove('sticky-nav-full')
+        setIsFullNow(false) // Update state
       }
     } else {
       navRef.current?.classList.add('remove-sticky')
@@ -44,16 +49,16 @@ const Nav = props => {
   }, [sentinalRef])
   return (
     <>
-      <div className='observer-element h-4 md:h-12' ref={sentinalRef}></div>
+      <div className="observer-element h-4 md:h-12" ref={sentinalRef}></div>
       <div
         className={`sticky-nav m-auto w-full h-6 flex flex-row justify-between items-center mb-2 md:mb-12 py-8 bg-opacity-60 ${
           !fullWidth ? 'max-w-3xl px-4' : 'px-4 md:px-24'
         }`}
-        id='sticky-nav'
+        id="sticky-nav"
         ref={navRef}>
-        <div className='flex items-center'>
-          <Link href='/' aria-label={siteConfig('TITLE')}>
-            <div className='h-6 w-6'>
+        <div className="flex items-center">
+          <Link href="/" aria-label={siteConfig('TITLE')}>
+            <div className="h-6 w-6">
               {/* <SvgIcon/> */}
               {siteConfig('NOBELIUM_NAV_NOTION_ICON') ? (
                 <LazyImage
@@ -68,14 +73,27 @@ const Nav = props => {
             </div>
           </Link>
           {post ? (
-            <p className='ml-2 font-medium text-gray-800 dark:text-gray-300 header-name'>
-              {post?.title}
-            </p>
+            isFullNow ? (
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="ml-2 font-medium text-gray-800 dark:text-gray-300 header-name">
+                {post?.title}
+              </button>
+            ) : (
+              <a
+                href="/"
+                className="ml-2 font-medium text-gray-800 dark:text-gray-300 header-name">
+                {siteConfig('TITLE') }
+              </a>
+            )
+
           ) : (
-            <p className='ml-2 font-medium text-gray-800 dark:text-gray-300 header-name whitespace-nowrap'>
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="ml-2 font-medium text-gray-800 dark:text-gray-300 header-name whitespace-nowrap">
               {siteConfig('TITLE')}
               {/* ,{' '}<span className="font-normal">{siteConfig('DESCRIPTION')}</span> */}
-            </p>
+            </button>
           )}
         </div>
         <NavBar {...props} />
@@ -140,19 +158,19 @@ const NavBar = props => {
   }
 
   return (
-    <div className='flex-shrink-0 flex'>
-      <ul className='hidden md:flex flex-row'>
+    <div className="flex-shrink-0 flex">
+      <ul className="hidden md:flex flex-row">
         {links?.map((link, index) => (
           <MenuItemDrop key={index} link={link} />
         ))}
       </ul>
-      <div className='md:hidden'>
+      <div className="md:hidden">
         <Collapse
           collapseRef={collapseRef}
           isOpen={isOpen}
-          type='vertical'
-          className='fixed top-16 right-6'>
-          <div className='dark:border-black bg-white dark:bg-black rounded border p-2 text-sm'>
+          type="vertical"
+          className="fixed top-16 right-6">
+          <div className="dark:border-black bg-white dark:bg-black rounded border p-2 text-sm">
             {links?.map((link, index) => (
               <MenuItemCollapse
                 key={index}
@@ -167,7 +185,7 @@ const NavBar = props => {
       </div>
 
       {siteConfig('NOBELIUM_MENU_DARKMODE_BUTTON') && (
-        <DarkModeButton className='text-center p-2.5 hover:bg-black hover:bg-opacity-10 rounded-full' />
+        <DarkModeButton className="text-center p-2.5 hover:bg-black hover:bg-opacity-10 rounded-full" />
       )}
 
       {siteConfig('NOBELIUM_MENU_RANDOM_POST') && (
@@ -176,7 +194,7 @@ const NavBar = props => {
       {siteConfig('NOBELIUM_MENU_SEARCH_BUTTON') && <SearchButton {...props} />}
       <i
         onClick={toggleOpen}
-        className='fas fa-bars cursor-pointer px-5 flex justify-center items-center md:hidden'></i>
+        className="fas fa-bars cursor-pointer px-5 flex justify-center items-center md:hidden"></i>
     </div>
   )
 }
